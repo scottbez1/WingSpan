@@ -1,5 +1,8 @@
 package com.scottbezek.wingspan.sample;
 
+import com.scottbezek.wingspan.WingSpan;
+import com.scottbezek.wingspan.WingSpan.ClickableSpanFactory;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Spanned;
@@ -7,9 +10,6 @@ import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.scottbezek.wingspan.WingSpan;
-import com.scottbezek.wingspan.WingSpan.ClickableSpanFactory;
 
 
 public class MainActivity extends Activity {
@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
                 })
                 .buildSpanned();
 
-        TextView tv = (TextView)findViewById(R.id.demo_text);
+        TextView tv = (TextView) findViewById(R.id.demo_text);
         tv.setText(foo);
         tv.setMovementMethod(new LinkMovementMethod());
     }

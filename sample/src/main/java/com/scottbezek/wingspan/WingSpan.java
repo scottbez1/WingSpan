@@ -1,5 +1,7 @@
 package com.scottbezek.wingspan;
 
+import org.xml.sax.XMLReader;
+
 import android.text.Editable;
 import android.text.Html;
 import android.text.Html.ImageGetter;
@@ -9,8 +11,6 @@ import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
-import org.xml.sax.XMLReader;
-
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -18,12 +18,17 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
- * Makes attaching spans to HTML-tagged easier, with a simple fluent interface. Simply bind a {@link com.scottbezek.wingspan.WingSpan.SpanFactory} for each HTML tag type you'd like to construct spans for. This will also convert basic HTML formatting tags to corresponding styled spans - see {@link Html#fromHtml(String)} for more details on which standard tags are supported.
+ * Makes attaching spans to HTML-tagged easier, with a simple fluent interface. Simply bind a @link
+ * com.scottbezek.wingspan.WingSpan.SpanFactory} for each HTML tag type you'd like to construct
+ * spans for. This will also convert basic HTML formatting tags to corresponding styled spans - see
+ * {@link Html#fromHtml(String)} for more details on which standard tags are supported.
  */
 public class WingSpan {
 
     private final String mSource;
+
     private final Map<String, SpanFactory> mFactories = new HashMap<String, SpanFactory>();
+
     private final SpanFactoryTagHandler mTagHandler = new SpanFactoryTagHandler(mFactories);
 
     private ImageGetter mImageGetter = null;
@@ -33,7 +38,9 @@ public class WingSpan {
     }
 
     /**
-     * Construct a {@link com.scottbezek.wingspan.WingSpan} from an HTML String source. Any substitutions/formatting-args should have already been made if desired.
+     * Construct a {@link com.scottbezek.wingspan.WingSpan} from an HTML String source. Any
+     * substitutions/formatting-args should have already been made if desired.
+     *
      * @return <code>this</code> for chaining calls.
      */
     public static WingSpan from(String source) {
@@ -42,6 +49,7 @@ public class WingSpan {
 
     /**
      * Set the {@link android.text.Html.ImageGetter} to be used for img html tags.
+     *
      * @return <code>this</code> for chaining calls.
      */
     public WingSpan setImageGetter(ImageGetter imageGetter) {
@@ -57,9 +65,13 @@ public class WingSpan {
     }
 
     /**
-     * Bind a {@link com.scottbezek.wingspan.WingSpan.SpanFactory} to be used to construct spans for HTML tags of the specified type.
-     * @param tag The HTML tag, e.g. "blink" for <code>&lt;blink&gt;</code> tags. Must not already be handled by {@link android.text.Html#fromHtml(String)}.
-     * @param spanFactory Used to construct a span for each HTML tag of type <code>tag</code> encountered.
+     * Bind a {@link com.scottbezek.wingspan.WingSpan.SpanFactory} to be used to construct spans for
+     * HTML tags of the specified type.
+     *
+     * @param tag         The HTML tag, e.g. "blink" for <code>&lt;blink&gt;</code> tags. Must not
+     *                    already be handled by {@link android.text.Html#fromHtml(String)}.
+     * @param spanFactory Used to construct a span for each HTML tag of type <code>tag</code>
+     *                    encountered.
      * @return <code>this</code> for chaining calls.
      */
     public WingSpan bind(String tag, SpanFactory spanFactory) {
@@ -73,7 +85,6 @@ public class WingSpan {
 
     /**
      * Build a spanned string from the original source.
-     * @return
      */
     public Spanned buildSpanned() {
         return Html.fromHtml(mSource, mImageGetter, mTagHandler);
@@ -89,7 +100,8 @@ public class WingSpan {
     }
 
     /**
-     * Helper {@link com.scottbezek.wingspan.WingSpan.SpanFactory} for constructing {@link android.text.style.ClickableSpan}s
+     * Helper {@link com.scottbezek.wingspan.WingSpan.SpanFactory} for constructing {@link
+     * android.text.style.ClickableSpan}s
      */
     public abstract static class ClickableSpanFactory implements SpanFactory {
 
@@ -160,7 +172,7 @@ public class WingSpan {
                 return null;
             } else {
                 for (int i = spans.length - 1; i >= 0; i--) {
-                    TagMarker current = (TagMarker)spans[i];
+                    TagMarker current = (TagMarker) spans[i];
                     if (current.tag.equals(tag)) {
                         return current;
                     }
@@ -170,7 +182,9 @@ public class WingSpan {
         }
 
         private static class TagMarker {
+
             public final String tag;
+
             public TagMarker(String tag) {
                 this.tag = tag;
             }
