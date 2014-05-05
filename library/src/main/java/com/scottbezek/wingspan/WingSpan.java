@@ -18,10 +18,11 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
- * Makes attaching spans to HTML-tagged easier, with a simple fluent interface. Simply bind a @link
- * com.scottbezek.wingspan.WingSpan.SpanFactory} for each HTML tag type you'd like to construct
- * spans for. This will also convert basic HTML formatting tags to corresponding styled spans - see
- * {@link Html#fromHtml(String)} for more details on which standard tags are supported.
+ * Makes attaching spans to HTML-tagged Strings easier, with a simple fluent interface. <p> Simply
+ * bind a {@link com.scottbezek.wingspan.WingSpan.SpanFactory} for each HTML tag type you'd like
+ * to convert to spans. This will also convert basic HTML formatting tags to corresponding styled
+ * spans - see {@link Html#fromHtml(String)} for more details on which standard tags are supported.
+ * </p>
  */
 public class WingSpan {
 
@@ -48,7 +49,7 @@ public class WingSpan {
     }
 
     /**
-     * Set the {@link android.text.Html.ImageGetter} to be used for img html tags.
+     * Set the {@link android.text.Html.ImageGetter} to be used for img tags.
      *
      * @return <code>this</code> for chaining calls.
      */
@@ -95,13 +96,22 @@ public class WingSpan {
      */
     public interface SpanFactory {
 
+        /**
+         * Construct and return a new span (such as a {@link android.text.style.StyleSpan}, {@link
+         * android.text.style.ImageSpan}, etc) to be attached to the String being processed. Will
+         * be attached to the String with flag {@link Spannable#SPAN_EXCLUSIVE_EXCLUSIVE}.
+         *
+         * @param tag           The HTML tag (all lower-case, e.g. "blink") being processed.
+         * @param innerContents The contents that of the region of text that will be spanned.
+         */
         @Nonnull
         Object getSpan(String tag, CharSequence innerContents);
     }
 
     /**
      * Helper {@link com.scottbezek.wingspan.WingSpan.SpanFactory} for constructing {@link
-     * android.text.style.ClickableSpan}s
+     * android.text.style.ClickableSpan}s. To use, subclass and implement the {@link
+     * #onClick(android.view.View)}} method.
      */
     public abstract static class ClickableSpanFactory implements SpanFactory {
 
