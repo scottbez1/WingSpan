@@ -11,20 +11,55 @@ import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
 /**
  * Makes attaching spans to HTML-tagged Strings easier, with a simple fluent interface. <p> Simply
- * bind a {@link com.scottbezek.wingspan.WingSpan.SpanFactory} for each HTML tag type you'd like
- * to convert to spans. This will also convert basic HTML formatting tags to corresponding styled
- * spans - see {@link Html#fromHtml(String)} for more details on which standard tags are supported.
- * </p>
+ * bind a {@link com.scottbezek.wingspan.WingSpan.SpanFactory} for each HTML tag type you'd like to
+ * convert to spans. This will also convert basic HTML formatting tags to corresponding styled spans
+ * - see {@link Html#fromHtml(String)} for more details on which standard tags are supported. </p>
  */
 public class WingSpan {
+
+    /**
+     * List of tags already handled by {@link Html#fromHtml(String)} which takes precendence over
+     * any custom {@link android.text.Html.TagHandler}, so fail fast when attempting to bind any of
+     * these.
+     */
+    private static final Set<String> RESERVED_TAGS = new HashSet<String>(Arrays.asList(
+            "br",
+            "p",
+            "div",
+            "strong",
+            "b",
+            "em",
+            "cite",
+            "dfn",
+            "i",
+            "big",
+            "small",
+            "font",
+            "blockquote",
+            "tt",
+            "a",
+            "u",
+            "sup",
+            "sub",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "img"
+    ));
 
     private final String mSource;
 
@@ -74,11 +109,20 @@ public class WingSpan {
      * @param spanFactory Used to construct a span for each HTML tag of type <code>tag</code>
      *                    encountered.
      * @return <code>this</code> for chaining calls.
+     * @throws java.lang.IllegalStateException If this {@link com.scottbezek.wingspan.WingSpan}
+     *                                         already has a {@link com.scottbezek.wingspan.WingSpan.SpanFactory}
+     *                                         bound for the specified tag, or if the specified tag
+     *                                         is already handled by {@link android.text.Html#fromHtml(String)}
+     *                                         and cannot be overridden with a custom tag handler.
      */
     public WingSpan bind(String tag, SpanFactory spanFactory) {
         tag = getCanonical(tag);
         if (mFactories.containsKey(tag)) {
             throw new IllegalStateException("Factory already bound to tag " + tag);
+        }
+        if (RESERVED_TAGS.contains(tag)) {
+            throw new IllegalStateException("Tag " + tag +
+                    " is a reserved tag, already handled by Html.fromHtml and cannot be overridden.");
         }
         mFactories.put(tag, spanFactory);
         return this;
@@ -98,8 +142,8 @@ public class WingSpan {
 
         /**
          * Construct and return a new span (such as a {@link android.text.style.StyleSpan}, {@link
-         * android.text.style.ImageSpan}, etc) to be attached to the String being processed. Will
-         * be attached to the String with flag {@link Spannable#SPAN_EXCLUSIVE_EXCLUSIVE}.
+         * android.text.style.ImageSpan}, etc) to be attached to the String being processed. Will be
+         * attached to the String with flag {@link Spannable#SPAN_EXCLUSIVE_EXCLUSIVE}.
          *
          * @param tag           The HTML tag (all lower-case, e.g. "blink") being processed.
          * @param innerContents The contents that of the region of text that will be spanned.
